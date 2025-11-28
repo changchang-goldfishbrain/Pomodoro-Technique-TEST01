@@ -31,7 +31,7 @@ jobs:
         run: |
           mkdir -p static_site
           # 複製您的核心 HTML 檔案
-          cp INDEX.HTML static_site/index.html
+          cp index.html static_site/index.html
           
           # 複製 PWA 圖示（如果已上傳，則複製，否則跳過）
           if [ -f pwa-192x192.png ]; then cp pwa-192x192.png static_site/; fi
