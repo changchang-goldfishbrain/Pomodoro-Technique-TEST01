@@ -9,7 +9,13 @@ on:
 
 jobs:
   deploy:
-    # 設置環境權限：這是解決 Action 失敗 (code 128) 和 Pages 部署失敗的關鍵步驟
+    # *** 關鍵修正：新增 environment 區塊 ***
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    # ***********************************
+    
+    # 設置環境權限
     permissions:
       contents: read
       pages: write
@@ -20,28 +26,24 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # *** 關鍵步驟：準備檔案到 Pages 服務預期的資料夾 ***
+      # 準備檔案到 Pages 服務預期的資料夾
       - name: Prepare Files for Pages
         run: |
-          # 建立 Pages 服務預期的工件資料夾
           mkdir -p static_site
-          
-          # 複製您的核心 HTML 檔案到 Pages 資料夾
-          # 由於您的檔名是 INDEX.HTML，我們將它複製並重命名為標準的 index.html
+          # 複製您的核心 HTML 檔案
           cp INDEX.HTML static_site/index.html
           
           # 複製 PWA 圖示（如果已上傳，則複製，否則跳過）
-          # 這是為了避免錯誤，如果您的專案根目錄有這些檔案，它們會被複製。
           if [ -f pwa-192x192.png ]; then cp pwa-192x192.png static_site/; fi
           if [ -f pwa-512x512.png ]; then cp pwa-512x512.png static_site/; fi
 
-      # *** 官方部署步驟 1：上傳工件 (Artifact) ***
+      # 官方部署步驟 1：上傳工件 (Artifact)
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./static_site
 
-      # *** 官方部署步驟 2：部署到 Pages 服務 ***
+      # 官方部署步驟 2：部署到 Pages 服務
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
